@@ -18,6 +18,7 @@ export const getS3Client = (storageRegion?: string) => {
   return new S3Client({
     endpoint: config.endpoint || undefined,
     region: config.region,
+    forcePathStyle: true, // Required for Supabase Storage
     credentials: {
       accessKeyId: config.accessKeyId,
       secretAccessKey: config.secretAccessKey,
@@ -37,6 +38,7 @@ export const getS3ClientForTeam = async (teamId: string) => {
   return new S3Client({
     endpoint: config.endpoint || undefined,
     region: config.region,
+    forcePathStyle: true, // Required for Supabase Storage
     credentials: {
       accessKeyId: config.accessKeyId,
       secretAccessKey: config.secretAccessKey,
@@ -99,6 +101,7 @@ export const getTeamS3ClientAndConfig = async (teamId: string) => {
   const client = new S3Client({
     endpoint: config.endpoint || undefined,
     region: config.region,
+    forcePathStyle: true, // Required for Supabase Storage
     credentials: {
       accessKeyId: config.accessKeyId,
       secretAccessKey: config.secretAccessKey,

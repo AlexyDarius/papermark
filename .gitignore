@@ -62,3 +62,6 @@ lib/emails/marketing
 
 # changelog
 changelog
+
+# local secrets
+.secrets

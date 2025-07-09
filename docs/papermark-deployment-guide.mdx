@@ -1,0 +1,194 @@
+---
+title: Deploying Papermark with Supabase and Vercel
+description: Step-by-step guide to deploy Papermark using Supabase, Vercel, and GitHub
+---
+
+import { Alert } from '@/components/ui/alert'
+
+# 🚀 Deploying Papermark with Supabase & Vercel
+
+This guide walks you through a **clean, production-ready deployment** of [Papermark](https://github.com/mfts/papermark) using:
+
+- **Supabase** – for auth, storage, and the database
+- **Vercel** – for frontend and API hosting
+- **GitHub** – for version control
+- **Cursor IDE** – for local development (with terminal)
+
+---
+
+## 🧰 Prerequisites
+
+Ensure the following tools are installed and set up:
+
+```bash
+# Install Supabase CLI
+npm install -g supabase
+
+# Install Vercel CLI
+npm install -g vercel
+
+# Log into both
+supabase login
+vercel login
+```
+
+---
+
+## 🪜 Step-by-Step Deployment Guide
+
+### Step 1: Clone the Repository
+
+```bash
+mkdir papermark-deploy && cd papermark-deploy
+git clone https://github.com/mfts/papermark.git
+cd papermark
+```
+
+---
+
+### Step 2: Create a Supabase Project
+
+1. Go to [Supabase Dashboard](https://app.supabase.com/)
+2. Click **New Project**
+3. Set:
+   - Name: `papermark`
+   - Password: create a strong one
+   - Region: closest to your users
+
+Wait until provisioning completes (~1 min)
+
+---
+
+### Step 3: Get Supabase API Credentials
+
+From **Project Settings → API**, copy the following:
+
+- `Project URL`
+- `anon key`
+- `service_role key`
+- `JWT secret`
+
+You'll use these in your `.env` file and Vercel.
+
+---
+
+### Step 4: Create a Storage Bucket
+
+1. Go to **Storage**
+2. Click **New Bucket**
+3. Name: `documents`
+4. Set as **Public**
+
+---
+
+### Step 5: Run Supabase Migrations
+
+Open `supabase/migrations/20240315054013_init.sql` in your editor.
+
+In the **Supabase SQL Editor**:
+
+- Paste the SQL code
+- Run it
+
+✅ This creates all necessary tables, policies, and roles.
+
+---
+
+### Step 6: Add Redirect URLs in Supabase Auth
+
+Go to **Auth > URL Configuration** and add:
+
+- `http://localhost:3000`
+- `https://your-vercel-app.vercel.app` (after deploy)
+
+---
+
+### Step 7: Create `.env.local`
+
+In the root of the `papermark` project, add a file called `.env.local`:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://<your-project-id>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-anon-key>
+SUPABASE_SERVICE_ROLE_KEY=<your-service-role-key>
+SUPABASE_JWT_SECRET=<your-jwt-secret>
+SUPABASE_BUCKET_NAME=documents
+```
+
+Replace with your real Supabase values.
+
+---
+
+### Step 8: Run Locally
+
+```bash
+npm install
+npm run dev
+```
+
+Test locally at [http://localhost:3000](http://localhost:3000)
+
+---
+
+### Step 9: Push to GitHub
+
+If you haven't yet:
+
+```bash
+gh repo fork mfts/papermark --clone
+cd papermark
+git remote rename origin upstream
+git remote add origin git@github.com:your-username/papermark.git
+git push -u origin main
+```
+
+---
+
+### Step 10: Deploy to Vercel
+
+```bash
+vercel link
+vercel env pull .env.production.local
+vercel --prod
+```
+
+Follow the prompts to:
+- Link your GitHub project
+- Set environment variables from `.env.production.local`
+
+---
+
+### Step 11: Add Vercel Domain to Supabase
+
+After deployment, add your live domain to Supabase:
+
+- **Auth > Redirect URLs**:
+  - `https://your-vercel-app.vercel.app`
+
+---
+
+## ✅ Success Checklist
+
+- [x] Supabase project created
+- [x] Storage bucket set up
+- [x] SQL schema applied
+- [x] `.env` configured
+- [x] App runs locally
+- [x] GitHub repo connected
+- [x] Vercel deployed
+- [x] Redirects working
+
+---
+
+## 🔐 Optional Enhancements
+
+- 🔒 Make the `documents` bucket **private** and use Supabase **RLS policies**
+- 🧾 Customize email templates in Supabase → Auth
+- 🌐 Add a **custom domain** via Vercel
+- 👥 Invite team members with Supabase Auth
+
+---
+
+<Alert>
+Need help with RLS, custom domains, or branding? Just ask!
+</Alert>
